@@ -1,5 +1,5 @@
 {
-    "name": "musicoaudaz/php",
+    "name": "musicoaudaz/ecommerce",
     "authors": [
         {
             "name": "Hcode Treinamentos",
@@ -13,7 +13,7 @@
     },
     "autoload": {
         "psr-4": {
-            "hcode\\": "vendor\\hcodebr\\php-classes\\src"
+            "Hcode\\": "vendor\\hcodebr\\php-classes\\src"
         }
     }
 }

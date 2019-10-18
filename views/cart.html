@@ -1,4 +1,4 @@
-<div class="product-big-title-area">
+    <div class="product-big-title-area">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -40,6 +40,7 @@
                                 </thead>
                                 <tbody>
                                     {loop="$products"}
+                                    
                                     <tr class="cart_item">
                                         <td class="product-remove">
                                             <a title="Remove this item" class="remove" href="/cart/{$value.idproduct}/remove">×</a> 
@@ -50,11 +51,12 @@
                                         </td>
 
                                         <td class="product-name">
-                                            <a href="/product/{$value.desurl}">{$value.desproduct}</a> 
+                                            <a href="/products/{$value.desurl}">{$value.desproduct}</a> 
                                         </td>
 
                                         <td class="product-price">
-                                            <span class="amount">R${function="formatPrice($value.vlprice)"}</span> 
+                                            <span class="amount">R${function="formatPrice($value.vlprice)
+                                            "}</span> 
                                         </td>
 
                                         <td class="product-quantity">
@@ -70,6 +72,7 @@
                                         </td>
                                     </tr>
                                     {/loop}
+                                    
                                 </tbody>
                             </table>
 
@@ -81,7 +84,7 @@
                                     
                                     <div class="coupon">
                                         <label for="cep">CEP:</label>
-                                        <input type="text" placeholder="00000-000" value="{$cart.deszipcode}" id="cep" class="input-text" name="zipcode">
+                                        <input type="text" placeholder="00000-000" value="" id="{$cart.deszipcode}" class="input-text" name="zipcode">
                                         <input type="submit" formmethod="post" formaction="/cart/freight" value="CÁLCULAR" class="button">
                                     </div>
 
@@ -100,7 +103,7 @@
 
                                             <tr class="shipping">
                                                 <th>Frete</th>
-                                                <td>R${function="formatPrice($cart.vlfreight)"}{if="$cart.nrdays > 0"} <small>prazo de {$cart.nrdays} dia(s)</small>{/if}</td>
+                                                <td>R${function="formatPrice($cart.vlfreight)"} {if="$cart.nrdays > 0"}<small>prazo de {$cart.nrdays} dia(s)</small>{/if}</td>
                                             </tr>
 
                                             <tr class="order-total">

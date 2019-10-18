@@ -1,9 +1,9 @@
 {
-    "name": "ecommerce",
+    "name": "/ecommerce",
     "authors": [
         {
-            "name": "Hcode Treinamentos",
-            "email": "suporte@hcode.com.br"
+            "name": "Juliana Chinaglia",
+            "email": "chinagliaju@gmail.com"
         }
     ],
     "require": {

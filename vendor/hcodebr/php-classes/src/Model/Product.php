@@ -2,17 +2,19 @@
 
 namespace Hcode\Model;
 
-use \Hcode\DB\Sql;
+
+use \Hcode\Db\Sql;
 use \Hcode\Model;
 use \Hcode\Mailer;
 
+
+
 class Product extends Model {
 
-	public static function listAll()
-	{
+
+	public static function listAll(){
 
 		$sql = new Sql();
-
 		return $sql->select("SELECT * FROM tb_products ORDER BY desproduct");
 
 	}
@@ -25,19 +27,28 @@ class Product extends Model {
 			$p = new Product();
 			$p->setData($row);
 			$row = $p->getValues();
-
 		}
 
 		return $list;
 
 	}
 
-	public function save()
-	{
+
+
+	public function save() {
 
 		$sql = new Sql();
+		/*
+		pdesperson VARCHAR(64), 
+		pdeslogin VARCHAR(64), 
+		pdespassword VARCHAR(256), 
+		pdesemail VARCHAR(128), 
+		pnrphone BIGINT, 
+		pinadmin TINYINT
 
+		*/
 		$results = $sql->select("CALL sp_products_save(:idproduct, :desproduct, :vlprice, :vlwidth, :vlheight, :vllength, :vlweight, :desurl)", array(
+
 			":idproduct"=>$this->getidproduct(),
 			":desproduct"=>$this->getdesproduct(),
 			":vlprice"=>$this->getvlprice(),
@@ -46,32 +57,34 @@ class Product extends Model {
 			":vllength"=>$this->getvllength(),
 			":vlweight"=>$this->getvlweight(),
 			":desurl"=>$this->getdesurl()
-		));
+			));
 
 		$this->setData($results[0]);
 
+	
 	}
 
-	public function get($idproduct)
-	{
+	public function get($idproduct){
 
 		$sql = new Sql();
 
+		
 		$results = $sql->select("SELECT * FROM tb_products WHERE idproduct = :idproduct", [
-			':idproduct'=>$idproduct
+
+			':idproduct'=> $idproduct
 		]);
 
 		$this->setData($results[0]);
-
 	}
 
-	public function delete()
-	{
+	public function delete(){
 
 		$sql = new Sql();
 
 		$sql->query("DELETE FROM tb_products WHERE idproduct = :idproduct", [
-			':idproduct'=>$this->getidproduct()
+
+			':idproduct'=> $this->getidproduct()
+
 		]);
 
 	}
@@ -79,16 +92,16 @@ class Product extends Model {
 	public function checkPhoto()
 	{
 
-		if (file_exists(
-			$_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 
+		if(file_exists(
+			$_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR .
 			"res" . DIRECTORY_SEPARATOR . 
 			"site" . DIRECTORY_SEPARATOR . 
 			"img" . DIRECTORY_SEPARATOR . 
 			"products" . DIRECTORY_SEPARATOR . 
-			$this->getidproduct() . ".jpg"
-			)) {
+			$this->getidproduct().".jpg"))
+		{
 
-			$url = "/res/site/img/products/" . $this->getidproduct() . ".jpg";
+			$url =  "/res/site/img/products/" . $this->getidproduct() . ".jpg";
 
 		} else {
 
@@ -109,6 +122,7 @@ class Product extends Model {
 
 		return $values;
 
+
 	}
 
 	public function setPhoto($file)
@@ -118,34 +132,32 @@ class Product extends Model {
 		$extension = end($extension);
 
 		switch ($extension) {
-
 			case "jpg":
 			case "jpeg":
 			$image = imagecreatefromjpeg($file["tmp_name"]);
-			break;
-
+				break;
+			
 			case "gif":
 			$image = imagecreatefromgif($file["tmp_name"]);
 			break;
-
 			case "png":
 			$image = imagecreatefrompng($file["tmp_name"]);
 			break;
-
+			
 		}
 
-		$dist = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 
+		$dist = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR .
 			"res" . DIRECTORY_SEPARATOR . 
 			"site" . DIRECTORY_SEPARATOR . 
 			"img" . DIRECTORY_SEPARATOR . 
 			"products" . DIRECTORY_SEPARATOR . 
-			$this->getidproduct() . ".jpg";
+			$this->getidproduct().".jpg";
 
-		imagejpeg($image, $dist);
+			// imagejpeg($image, $dist);
 
-		imagedestroy($image);
+			// imagedestroy($image);
 
-		$this->checkPhoto();
+			$this->checkPhoto();
 
 	}
 
@@ -154,8 +166,9 @@ class Product extends Model {
 
 		$sql = new Sql();
 
-		$rows = $sql->select("SELECT * FROM tb_products WHERE desurl = :desurl LIMIT 1", [
+	$rows =	$sql->select("SELECT * FROM tb_products WHERE desurl = :desurl LIMIT 1",[
 			':desurl'=>$desurl
+
 		]);
 
 		$this->setData($rows[0]);
@@ -164,35 +177,33 @@ class Product extends Model {
 
 	public function getCategories()
 	{
+		return $sql = new Sql();
 
-		$sql = new Sql();
+		return $sql->select("SELECT * FROM tb_categories a INNER JOIN tb_productscategories b ON a.idcategory = b.idcategory WHERE b.idproduct = :idproduct",
+			[
+				':idproduct'=>$this->getidproduct()
 
-		return $sql->select("
-			SELECT * FROM tb_categories a INNER JOIN tb_productscategories b ON a.idcategory = b.idcategory WHERE b.idproduct = :idproduct
-		", [
+			]
 
-			':idproduct'=>$this->getidproduct()
-		]);
+	);
+
 
 	}
 
-	public static function getPage($page = 1, $itemsPerPage = 10)
+		public static function getPage($page = 1, $itemsPerPage=10)
 	{
 
 		$start = ($page - 1) * $itemsPerPage;
 
 		$sql = new Sql();
 
-		$results = $sql->select("
-			SELECT SQL_CALC_FOUND_ROWS *
-			FROM tb_products 
-			ORDER BY desproduct
-			LIMIT $start, $itemsPerPage;
-		");
+		$results = $sql->select("SELECT SQL_CALC_FOUND_ROWS *
+					FROM tb_products ORDER BY desproduct
+					LIMIT $start, $itemsPerPage;");
 
 		$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
 
-		return [
+		return[
 			'data'=>$results,
 			'total'=>(int)$resultTotal[0]["nrtotal"],
 			'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage)
@@ -200,26 +211,27 @@ class Product extends Model {
 
 	}
 
-	public static function getPageSearch($search, $page = 1, $itemsPerPage = 10)
+	public static function getPageSearch($search, $page = 1, $itemsPerPage=10)
 	{
 
 		$start = ($page - 1) * $itemsPerPage;
 
 		$sql = new Sql();
 
-		$results = $sql->select("
-			SELECT SQL_CALC_FOUND_ROWS *
-			FROM tb_products 
-			WHERE desproduct LIKE :search
-			ORDER BY desproduct
-			LIMIT $start, $itemsPerPage;
-		", [
-			':search'=>'%'.$search.'%'
-		]);
+		$results = $sql->select("SELECT SQL_CALC_FOUND_ROWS *
+					FROM tb_products 
+					WHERE desproduct LIKE :search 
+					ORDER BY desproduct
+					LIMIT $start, $itemsPerPage;",
+
+					[
+						':search'=>'%'.$search.'%'
+					]
+				);
 
 		$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
 
-		return [
+		return[
 			'data'=>$results,
 			'total'=>(int)$resultTotal[0]["nrtotal"],
 			'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage)
@@ -227,6 +239,8 @@ class Product extends Model {
 
 	}
 
-}
 
- ?>
+	
+}	
+
+?>

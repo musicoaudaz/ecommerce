@@ -15,7 +15,7 @@ $app->get("/admin/orders/:idorder/status", function($idorder){
 
 	$page = new PageAdmin();
 
-	$page->setTpl("order-status", [
+	$page->setTpl("order-status",[
 		'order'=>$order->getValues(),
 		'status'=>OrderStatus::listAll(),
 		'msgSuccess'=>Order::getSuccess(),
@@ -28,10 +28,12 @@ $app->post("/admin/orders/:idorder/status", function($idorder){
 
 	User::verifyLogin();
 
-	if (!isset($_POST['idstatus']) || !(int)$_POST['idstatus'] > 0) {
-		Order::setError("Informe o status atual.");
-		header("Location: /admin/orders/".$idorder."/status");
+	if(!isset($_POST['idstatus']) || !(int)$_POST['idstatus'] > 0){
+
+		Order::setError("Informe status atual");
+		header("Location: /admin/orders".$idorder."/status");
 		exit;
+
 	}
 
 	$order = new Order();
@@ -42,19 +44,17 @@ $app->post("/admin/orders/:idorder/status", function($idorder){
 
 	$order->save();
 
-	Order::setSuccess("Status atualizado.");
-
-	header("Location: /admin/orders/".$idorder."/status");
+	Order::setSuccess("Status atualizado!");
+	header("Location: /admin/orders".$idorder."/status");
 	exit;
 
 });
 
 $app->get("/admin/orders/:idorder/delete", function($idorder){
 
-	User::verifyLogin();
+	User:verifyLogin();
 
 	$order = new Order();
-
 	$order->get((int)$idorder);
 
 	$order->delete();
@@ -76,11 +76,12 @@ $app->get("/admin/orders/:idorder", function($idorder){
 
 	$page = new PageAdmin();
 
-	$page->setTpl("order", [
+	$page->setTpl("order",[
 		'order'=>$order->getValues(),
 		'cart'=>$cart->getValues(),
 		'products'=>$cart->getProducts()
 	]);
+
 
 });
 
@@ -88,31 +89,38 @@ $app->get("/admin/orders", function(){
 
 	User::verifyLogin();
 
-	$search = (isset($_GET['search'])) ? $_GET['search'] : "";
+		$search = (isset($_GET['search'])) ? $_GET['search'] : "";
+
 	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
 
-	if ($search != '') {
+	if($search != ''){
 
 		$pagination = Order::getPageSearch($search, $page);
 
-	} else {
+	}else {
 
 		$pagination = Order::getPage($page);
 
 	}
 
+
 	$pages = [];
 
-	for ($x = 0; $x < $pagination['pages']; $x++)
+	for($x = 0; $x < $pagination['pages']; $x++)
 	{
 
 		array_push($pages, [
 			'href'=>'/admin/orders?'.http_build_query([
 				'page'=>$x+1,
 				'search'=>$search
+
 			]),
+
 			'text'=>$x+1
+
+
 		]);
+
 
 	}
 
@@ -122,7 +130,9 @@ $app->get("/admin/orders", function(){
 		"orders"=>$pagination['data'],
 		"search"=>$search,
 		"pages"=>$pages
+
 	]);
+
 
 });
 
